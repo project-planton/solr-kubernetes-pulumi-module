@@ -114,7 +114,7 @@ func buildSolrKubernetesObject(i *input) (*v1beta1.SolrCloud, error) {
 	return &v1beta1.SolrCloud{
 		TypeMeta: k8sapimachineryv1.TypeMeta{
 			APIVersion: "solr.apache.org/v1beta1",
-			Kind:       "SolrKubernetes",
+			Kind:       "SolrCloud",
 		},
 		ObjectMeta: k8sapimachineryv1.ObjectMeta{
 			Name:      i.resourceName,
