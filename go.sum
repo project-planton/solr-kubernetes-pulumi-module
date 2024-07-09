@@ -686,8 +686,8 @@ github.com/plantoncloud/environment-pulumi-blueprint v0.0.0-20240704091257-04ad0
 github.com/plantoncloud/environment-pulumi-blueprint v0.0.0-20240704091257-04ad06f126c5/go.mod h1:VPf7ZEgV9C+ihs4UkRdakz21hVLFNElT+BIHr4czr4M=
 github.com/plantoncloud/kube-cluster-pulumi-blueprint v0.0.0-20240704091135-efea59ca78af h1:feXMfjdHWVpZlnWUli/uje+0t+GTmwHbHYCtc5ivxPQ=
 github.com/plantoncloud/kube-cluster-pulumi-blueprint v0.0.0-20240704091135-efea59ca78af/go.mod h1:B3m+bKUXbiiEiLrccXdVGgI7N0ovopJJZiim+zBJDxE=
-github.com/plantoncloud/planton-cloud-apis v0.0.204 h1:+22CmcjKpJm+Q6ngDB+hpVF7TOvqSGuJRIET1/7kmr4=
-github.com/plantoncloud/planton-cloud-apis v0.0.204/go.mod h1:y1LFk2+lhkY1KKqQ/t1R+WXPEwraH1aKfhOxVjZIaOY=
+github.com/plantoncloud/planton-cloud-apis v0.0.205 h1:VLFoo6FwyC4aljwtZaqQt9Huh3TyRBW2r9fslSW1hBE=
+github.com/plantoncloud/planton-cloud-apis v0.0.205/go.mod h1:y1LFk2+lhkY1KKqQ/t1R+WXPEwraH1aKfhOxVjZIaOY=
 github.com/plantoncloud/pulumi-blueprint-golang-commons v0.0.0-20240703120008-7827af7d39ec h1:KYaHSkDpUPx9UEQmjjVVZmZ/66lJsv5lI9GAL9P0INQ=
 github.com/plantoncloud/pulumi-blueprint-golang-commons v0.0.0-20240703120008-7827af7d39ec/go.mod h1:Q3oeTbpfXNydkhd1YFaxFuMpY8n8lXmyYJ50kY8Asoc=
 github.com/plantoncloud/pulumi-stack-runner-go-sdk v0.0.47 h1:H8YW2nGP2BnbBbl5VfddDE7XBv3J9Q8GCeC0C5E0Fw4=
