@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/plantoncloud-inc/go-commons/network/dns/zone"
 	"github.com/plantoncloud/solr-kubernetes-pulumi-blueprint/pkg/solr/network/ingress/netutils/port"
-	"github.com/plantoncloud/solr-kubernetes-pulumi-blueprint/pkg/solr/network/ingress/netutils/service"
 	"path/filepath"
 
 	"github.com/pkg/errors"
@@ -61,7 +60,7 @@ func buildVirtualServiceObject(i *input) *v1beta1.VirtualService {
 				Route: []*networkingv1beta1.HTTPRouteDestination{
 					{
 						Destination: &networkingv1beta1.Destination{
-							Host: service.GetKubeServiceNameFqdn(i.resourceName, i.namespaceName),
+							Host: i.kubeServiceName,
 							Port: &networkingv1beta1.PortSelector{
 								Number: port.SolrCloudCommonServicePort,
 							},

@@ -7,17 +7,17 @@ import (
 )
 
 type input struct {
-	ResourceId                    string
-	ResourceName                  string
-	EnvironmentName               string
-	EndpointDomainName            string
-	NamespaceName                 string
-	ExternalLoadBalancerIpAddress string
-	InternalLoadBalancerIpAddress string
-	InternalHostname              string
-	ExternalHostname              string
-	KubeServiceName               string
-	KubeLocalEndpoint             string
+	resourceId                    string
+	resourceName                  string
+	environmentName               string
+	endpointDomainName            string
+	namespaceName                 string
+	externalLoadBalancerIpAddress string
+	internalLoadBalancerIpAddress string
+	internalHostname              string
+	externalHostname              string
+	kubeServiceName               string
+	kubeLocalEndpoint             string
 }
 
 func extractInput(ctx *pulumi.Context) *input {
@@ -34,16 +34,16 @@ func extractInput(ctx *pulumi.Context) *input {
 	}
 
 	return &input{
-		ResourceId:                    ctxConfig.Spec.ResourceId,
-		ResourceName:                  ctxConfig.Spec.ResourceName,
-		EnvironmentName:               ctxConfig.Spec.EnvironmentInfo.EnvironmentName,
-		EndpointDomainName:            ctxConfig.Spec.EndpointDomainName,
-		NamespaceName:                 ctxConfig.Spec.NamespaceName,
-		ExternalLoadBalancerIpAddress: externalLoadBalancerIpAddress,
-		InternalLoadBalancerIpAddress: internalLoadBalancerIpAddress,
-		InternalHostname:              ctxConfig.Spec.InternalHostname,
-		ExternalHostname:              ctxConfig.Spec.ExternalHostname,
-		KubeServiceName:               ctxConfig.Spec.KubeServiceName,
-		KubeLocalEndpoint:             ctxConfig.Spec.KubeLocalEndpoint,
+		resourceId:                    ctxConfig.Spec.ResourceId,
+		resourceName:                  ctxConfig.Spec.ResourceName,
+		environmentName:               ctxConfig.Spec.EnvironmentInfo.EnvironmentName,
+		endpointDomainName:            ctxConfig.Spec.EndpointDomainName,
+		namespaceName:                 ctxConfig.Spec.NamespaceName,
+		externalLoadBalancerIpAddress: externalLoadBalancerIpAddress,
+		internalLoadBalancerIpAddress: internalLoadBalancerIpAddress,
+		internalHostname:              ctxConfig.Spec.InternalHostname,
+		externalHostname:              ctxConfig.Spec.ExternalHostname,
+		kubeServiceName:               ctxConfig.Spec.KubeServiceName,
+		kubeLocalEndpoint:             ctxConfig.Spec.KubeLocalEndpoint,
 	}
 }
