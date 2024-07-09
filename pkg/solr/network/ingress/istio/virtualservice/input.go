@@ -17,6 +17,7 @@ type input struct {
 	kubeEndpoint       string
 	environmentName    string
 	endpointDomainName string
+	kubeServiceName    string
 }
 
 func extractInput(ctx *pulumi.Context) *input {
@@ -33,5 +34,6 @@ func extractInput(ctx *pulumi.Context) *input {
 		kubeEndpoint:       ctxState.Spec.KubeLocalEndpoint,
 		environmentName:    ctxState.Spec.EnvironmentInfo.EnvironmentName,
 		endpointDomainName: ctxState.Spec.EndpointDomainName,
+		kubeServiceName:    ctxState.Spec.KubeServiceName,
 	}
 }

@@ -12,19 +12,19 @@ import (
 
 func Export(ctx *pulumi.Context) error {
 	var i = extractInput(ctx)
-	var kubePortForwardCommand = getKubePortForwardCommand(i.NamespaceName, i.ResourceName)
+	var kubePortForwardCommand = getKubePortForwardCommand(i.namespaceName, i.kubeServiceName)
 
-	ctx.Export(GetExternalClusterHostnameOutputName(), pulumi.String(i.ExternalHostname))
-	ctx.Export(GetInternalClusterHostnameOutputName(), pulumi.String(i.InternalHostname))
+	ctx.Export(GetExternalClusterHostnameOutputName(), pulumi.String(i.externalHostname))
+	ctx.Export(GetInternalClusterHostnameOutputName(), pulumi.String(i.internalHostname))
 
-	ctx.Export(GetKubeServiceNameOutputName(), pulumi.String(i.KubeServiceName))
+	ctx.Export(GetKubeServiceNameOutputName(), pulumi.String(i.kubeServiceName))
 
-	ctx.Export(GetKubeEndpointOutputName(), pulumi.String(i.KubeLocalEndpoint))
+	ctx.Export(GetKubeEndpointOutputName(), pulumi.String(i.kubeLocalEndpoint))
 
 	ctx.Export(GetKubePortForwardCommandOutputName(), pulumi.String(kubePortForwardCommand))
-	ctx.Export(GetExternalLoadBalancerIp(), pulumi.String(i.ExternalLoadBalancerIpAddress))
-	ctx.Export(GetInternalLoadBalancerIp(), pulumi.String(i.InternalLoadBalancerIpAddress))
-	ctx.Export(GetNamespaceNameOutputName(), pulumi.String(i.NamespaceName))
+	ctx.Export(GetExternalLoadBalancerIp(), pulumi.String(i.externalLoadBalancerIpAddress))
+	ctx.Export(GetInternalLoadBalancerIp(), pulumi.String(i.internalLoadBalancerIpAddress))
+	ctx.Export(GetNamespaceNameOutputName(), pulumi.String(i.namespaceName))
 
 	return nil
 }
