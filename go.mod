@@ -1,54 +1,17 @@
-module github.com/plantoncloud/solr-kubernetes-pulumi-blueprint
+module github.com/plantoncloud/solr-kubernetes-pulumi-module
 
 go 1.22
 
-toolchain go1.22.2
+replace github.com/plantoncloud/planton-cloud-apis => ../../plantoncloud/planton-cloud-apis
 
-//replace github.com/plantoncloud/planton-cloud-apis => /Users/swarup/scm/github.com/plantoncloud/planton-cloud-apis
+replace github.com/plantoncloud/stack-job-runner-golang-sdk => ../../plantoncloud/stack-job-runner-golang-sdk
 
-//replace github.com/plantoncloud/pulumi-stack-runner-go-sdk => /Users/swarup/scm/github.com/plantoncloud/pulumi-stack-runner-go-sdk
-
-//replace github.com/plantoncloud-inc/go-commons => /Users/swarup/scm/github.com/plantoncloud-inc/go-commons
-
-//replace github.com/plantoncloud/kube-cluster-pulumi-blueprint => /Users/swarup/scm/github.com/plantoncloud/kube-cluster-pulumi-blueprint
-
-//replace github.com/plantoncloud/environment-pulumi-blueprint => /Users/swarup/scm/github.com/plantoncloud/environment-pulumi-blueprint
-
-//these replacements are required in order to use external-secrets apis https://github.com/external-secrets/external-secrets/blob/main/go.mod
-replace (
-	github.com/go-check/check => github.com/go-check/check v0.0.0-20180628173108-788fd7840127
-	github.com/go-test/deep => github.com/go-test/deep v1.0.4
-	k8s.io/api => k8s.io/api v0.24.2
-	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.24.2
-	k8s.io/apimachinery => k8s.io/apimachinery v0.24.2
-	k8s.io/apiserver => k8s.io/apiserver v0.24.2
-	k8s.io/cli-runtime => k8s.io/cli-runtime v0.24.2
-	k8s.io/client-go => k8s.io/client-go v0.24.2
-	k8s.io/cloud-provider => k8s.io/cloud-provider v0.24.2
-	k8s.io/cluster-bootstrap => k8s.io/cluster-bootstrap v0.24.2
-	k8s.io/code-generator => k8s.io/code-generator v0.24.2
-	k8s.io/component-base => k8s.io/component-base v0.24.2
-	k8s.io/component-helpers => k8s.io/component-helpers v0.24.2
-	k8s.io/controller-manager => k8s.io/controller-manager v0.24.2
-	k8s.io/cri-api => k8s.io/cri-api v0.24.2
-	k8s.io/csi-translation-lib => k8s.io/csi-translation-lib v0.24.2
-	k8s.io/kube-aggregator => k8s.io/kube-aggregator v0.24.2
-	k8s.io/kube-controller-manager => k8s.io/kube-controller-manager v0.24.2
-	k8s.io/kube-proxy => k8s.io/kube-proxy v0.24.2
-	k8s.io/kube-scheduler => k8s.io/kube-scheduler v0.24.2
-	k8s.io/kubectl => k8s.io/kubectl v0.24.2
-	k8s.io/kubelet => k8s.io/kubelet v0.24.2
-	k8s.io/legacy-cloud-providers => k8s.io/legacy-cloud-providers v0.24.2
-	k8s.io/metrics => k8s.io/metrics v0.24.2
-	k8s.io/mount-utils => k8s.io/mount-utils v0.24.2
-	k8s.io/pod-security-admission => k8s.io/pod-security-admission v0.24.2
-	k8s.io/sample-apiserver => k8s.io/sample-apiserver v0.24.2
-)
+replace github.com/plantoncloud/pulumi-module-golang-commons => ../../plantoncloud/pulumi-module-golang-commons
 
 require (
 	github.com/pkg/errors v0.9.1
 	github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.7.1
-	github.com/pulumi/pulumi/sdk/v3 v3.122.0
+	github.com/pulumi/pulumi/sdk/v3 v3.124.0
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	google.golang.org/grpc v1.63.2 // indirect
 	istio.io/api v0.0.0-20220512181135-e8ec1e1d89de
@@ -59,12 +22,7 @@ require (
 
 require (
 	github.com/apache/solr-operator v0.6.0
-	github.com/plantoncloud-inc/go-commons v0.0.433
-	github.com/plantoncloud/environment-pulumi-blueprint v0.0.0-20240704091257-04ad06f126c5
-	github.com/plantoncloud/kube-cluster-pulumi-blueprint v0.0.0-20240713083822-41b0b9bb03cf
-	github.com/plantoncloud/planton-cloud-apis v0.0.211
-	github.com/plantoncloud/pulumi-blueprint-golang-commons v0.0.0-20240713083334-2470e197b77f
-	github.com/plantoncloud/pulumi-stack-runner-go-sdk v0.0.47
+	github.com/plantoncloud/planton-cloud-apis v0.0.214
 	k8s.io/api v0.28.1
 )
 
@@ -210,6 +168,8 @@ require (
 	github.com/pjbgf/sha1cd v0.3.0 // indirect
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c // indirect
 	github.com/pkg/term v1.1.0 // indirect
+	github.com/plantoncloud/pulumi-module-golang-commons v0.0.0-20240724145530-1356c84c2937 // indirect
+	github.com/plantoncloud/stack-job-runner-golang-sdk v0.0.52 // indirect
 	github.com/prometheus/client_golang v1.14.0 // indirect
 	github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231 // indirect
 	github.com/pulumi/esc v0.9.1 // indirect
