@@ -15,7 +15,10 @@ const (
 )
 
 func (s *ResourceStack) istioIngress(ctx *pulumi.Context, createdNamespace *kubernetescorev1.Namespace) error {
+	//create variable with descriptive name for the api-resource in the input
 	solrKubernetes := s.Input.ApiResource
+
+	//crate new certificate
 	addedCertificate, err := certmanagerv1.NewCertificate(ctx,
 		"ingress-certificate",
 		&certmanagerv1.CertificateArgs{
@@ -47,12 +50,14 @@ func (s *ResourceStack) istioIngress(ctx *pulumi.Context, createdNamespace *kube
 		return errors.Wrap(err, "error creating certificate")
 	}
 
+	//create gateway
 	_, err = istiov1.NewGateway(ctx,
 		solrKubernetes.Metadata.Id,
 		&istiov1.GatewayArgs{
 			Metadata: metav1.ObjectMetaArgs{
-				Name:      pulumi.String(solrKubernetes.Metadata.Id),
-				Namespace: createdNamespace.Metadata.Name(),
+				Name: pulumi.String(solrKubernetes.Metadata.Id),
+				//all gateway resources should be created in the istio-ingress deployment namespace
+				Namespace: pulumi.String(IstioIngressNamespace),
 				Labels:    pulumi.ToStringMap(s.Labels),
 			},
 			Spec: istiov1.GatewaySpecArgs{
@@ -104,6 +109,7 @@ func (s *ResourceStack) istioIngress(ctx *pulumi.Context, createdNamespace *kube
 		return errors.Wrap(err, "error creating gateway")
 	}
 
+	//create virtual-service
 	_, err = istiov1.NewVirtualService(ctx,
 		solrKubernetes.Metadata.Id,
 		&istiov1.VirtualServiceArgs{
