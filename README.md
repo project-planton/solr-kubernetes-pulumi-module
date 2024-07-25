@@ -1,1 +1,1 @@
-# solr-kubernetes-pulumi-blueprint
+# solr-kubernetes-pulumi-module
