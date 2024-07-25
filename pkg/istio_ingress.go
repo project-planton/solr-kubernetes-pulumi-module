@@ -129,7 +129,9 @@ func (s *ResourceStack) istioIngress(ctx *pulumi.Context, createdNamespace *kube
 						Route: istiov1.VirtualServiceSpecHttpRouteArray{
 							&istiov1.VirtualServiceSpecHttpRouteArgs{
 								Destination: istiov1.VirtualServiceSpecHttpRouteDestinationArgs{
-									Host: pulumi.Sprintf("%s-solrcloud-common", solrKubernetes.Metadata.Name),
+									Host: pulumi.Sprintf("%s-solrcloud-common.%s.svc.cluster.local",
+										solrKubernetes.Metadata.Name,
+										createdNamespace.Metadata.Name()),
 									Port: istiov1.VirtualServiceSpecHttpRouteDestinationPortArgs{
 										Number: pulumi.Int(80),
 									},
