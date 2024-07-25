@@ -28,15 +28,16 @@ func (s *ResourceStack) loadBalancerIngress(ctx *pulumi.Context,
 				Type: pulumi.String("LoadBalancer"), // Service type is LoadBalancer
 				Ports: kubernetescorev1.ServicePortArray{
 					&kubernetescorev1.ServicePortArgs{
-						Name:       pulumi.String("http"),
-						Port:       pulumi.Int(80),
-						Protocol:   pulumi.String("TCP"),
-						TargetPort: pulumi.String("http"), // This assumes your Solr pod has a port named 'http'
+						Name:        pulumi.String("solr-client"),
+						Port:        pulumi.Int(80),
+						Protocol:    pulumi.String("TCP"),
+						AppProtocol: pulumi.String("http"),
+						TargetPort:  pulumi.String("solr-client"), // This assumes your Solr pod has a port named 'http'
 					},
 				},
 				Selector: pulumi.StringMap{
-					"app.kubernetes.io/component": pulumi.String("solr-controller"),
-					"app.kubernetes.io/instance":  createdNamespace.Metadata.Name().Elem(),
+					"solr-kubernetes": pulumi.String(solrKubernetes.Metadata.Name),
+					"technology":      pulumi.String("solr-kubernetes"),
 				},
 			},
 		}, pulumi.Parent(createdNamespace))
@@ -63,15 +64,16 @@ func (s *ResourceStack) loadBalancerIngress(ctx *pulumi.Context,
 				Type: pulumi.String("LoadBalancer"), // Service type is LoadBalancer
 				Ports: kubernetescorev1.ServicePortArray{
 					&kubernetescorev1.ServicePortArgs{
-						Name:       pulumi.String("http"),
-						Port:       pulumi.Int(80),
-						Protocol:   pulumi.String("TCP"),
-						TargetPort: pulumi.String("http"), // This assumes your Solr pod has a port named 'http'
+						Name:        pulumi.String("solr-client"),
+						Port:        pulumi.Int(80),
+						Protocol:    pulumi.String("TCP"),
+						AppProtocol: pulumi.String("http"),
+						TargetPort:  pulumi.String("solr-client"), // This assumes your Solr pod has a port named 'http'
 					},
 				},
 				Selector: pulumi.StringMap{
-					"app.kubernetes.io/component": pulumi.String("solr-controller"),
-					"app.kubernetes.io/instance":  createdNamespace.Metadata.Name().Elem(),
+					"solr-kubernetes": pulumi.String(solrKubernetes.Metadata.Name),
+					"technology":      pulumi.String("solr-kubernetes"),
 				},
 			},
 		}, pulumi.Parent(createdNamespace))

@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"fmt"
 	"github.com/pkg/errors"
 	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/kubernetes/solrkubernetes/model"
 	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/commons/kubernetes/enums/kubernetesworkloadingresstype"
@@ -48,15 +49,26 @@ func (s *ResourceStack) Resources(ctx *pulumi.Context) error {
 	//export name of the namespace
 	ctx.Export(NamespaceOutputName, createdNamespace.Metadata.Name())
 
-	//install the solr helm-chart
+	//create solr-cloud custom resource
 	if err := s.solrCloud(ctx, createdNamespace); err != nil {
 		return errors.Wrap(err, "failed to create helm-chart resources")
 	}
 
+	//export kubernetes service name
+	ctx.Export(ServiceOutputName,
+		pulumi.Sprintf("%s-solrcloud-common", solrKubernetes.Metadata.Name))
+
+	//export kubernetes endpoint
+	ctx.Export(KubeEndpointOutputName,
+		pulumi.Sprintf("%s-solrcloud-common.%s.svc.cluster.local.",
+			solrKubernetes.Metadata.Name,
+			namespaceName))
+
 	//export kube-port-forward command
 	ctx.Export(PortForwardCommandOutputName, pulumi.Sprintf(
 		"kubectl port-forward -n %s service/%s 8080:8080",
-		namespaceName, solrKubernetes.Metadata.Name))
+		namespaceName,
+		fmt.Sprintf("%s-solrcloud-common", solrKubernetes.Metadata.Name)))
 
 	//no ingress resources required when ingress is not enabled
 	if !solrKubernetes.Spec.Ingress.IsEnabled || solrKubernetes.Spec.Ingress.EndpointDomainName == "" {
