@@ -3,15 +3,13 @@ package pkg
 import (
 	"github.com/pkg/errors"
 	"github.com/plantoncloud/kubernetes-crd-pulumi-types/pkg/solroperator/solr/v1beta1"
-	"github.com/plantoncloud/solr-kubernetes-pulumi-module/pkg/locals"
 	kubernetescorev1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/core/v1"
 	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/meta/v1"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-func solrCloud(ctx *pulumi.Context,
-	createdNamespace *kubernetescorev1.Namespace,
-	labels map[string]string) error {
+func solrCloud(ctx *pulumi.Context, locals *Locals,
+	createdNamespace *kubernetescorev1.Namespace, labels map[string]string) error {
 	//create solr-operator's solrcloud resource
 	_, err := v1beta1.NewSolrCloud(ctx, "solr-cloud", &v1beta1.SolrCloudArgs{
 		Metadata: metav1.ObjectMetaArgs{

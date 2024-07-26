@@ -4,7 +4,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/kubernetes/solrkubernetes/model"
 	"github.com/plantoncloud/pulumi-module-golang-commons/pkg/provider/kubernetes/pulumikubernetesprovider"
-	"github.com/plantoncloud/solr-kubernetes-pulumi-module/pkg/locals"
 	kubernetescorev1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/core/v1"
 	kubernetesmetav1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/meta/v1"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -16,6 +15,8 @@ type ResourceStack struct {
 }
 
 func (s *ResourceStack) Resources(ctx *pulumi.Context) error {
+	locals := initializeLocals(ctx, s.Input)
+
 	//create kubernetes-provider from the credential in the stack-input
 	kubernetesProvider, err := pulumikubernetesprovider.GetWithKubernetesClusterCredential(ctx,
 		s.Input.KubernetesClusterCredential)
@@ -40,13 +41,13 @@ func (s *ResourceStack) Resources(ctx *pulumi.Context) error {
 	}
 
 	//create solr-cloud custom resource
-	if err := solrCloud(ctx, createdNamespace, s.Labels); err != nil {
+	if err := solrCloud(ctx, locals, createdNamespace, s.Labels); err != nil {
 		return errors.Wrap(err, "failed to create helm-chart resources")
 	}
 
 	//create istio-ingress resources if ingress is enabled.
 	if locals.SolrKubernetes.Spec.Ingress.IsEnabled {
-		if err := istioIngress(ctx, createdNamespace, s.Labels); err != nil {
+		if err := istioIngress(ctx, locals, createdNamespace, s.Labels); err != nil {
 			return errors.Wrap(err, "failed to create istio ingress resources")
 		}
 	}
