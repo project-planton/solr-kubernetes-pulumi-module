@@ -4,45 +4,31 @@ import (
 	"github.com/pkg/errors"
 	certmanagerv1 "github.com/plantoncloud/kubernetes-crd-pulumi-types/pkg/certmanager/certmanager/v1"
 	istiov1 "github.com/plantoncloud/kubernetes-crd-pulumi-types/pkg/istio/networking/v1"
+	"github.com/plantoncloud/solr-kubernetes-pulumi-module/pkg/locals"
 	kubernetescorev1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/core/v1"
 	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/meta/v1"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	v1 "istio.io/api/networking/v1"
 )
 
-const (
-	IstioIngressNamespace = "istio-ingress"
-)
-
-func (s *ResourceStack) istioIngress(ctx *pulumi.Context, createdNamespace *kubernetescorev1.Namespace) error {
-	//create variable with descriptive name for the api-resource in the input
-	solrKubernetes := s.Input.ApiResource
-
+func istioIngress(ctx *pulumi.Context,
+	createdNamespace *kubernetescorev1.Namespace,
+	labels map[string]string) error {
 	//crate new certificate
 	addedCertificate, err := certmanagerv1.NewCertificate(ctx,
 		"ingress-certificate",
 		&certmanagerv1.CertificateArgs{
 			Metadata: metav1.ObjectMetaArgs{
-				Name:      pulumi.String(solrKubernetes.Metadata.Id),
+				Name:      pulumi.String(locals.SolrKubernetes.Metadata.Id),
 				Namespace: createdNamespace.Metadata.Name(),
-				Labels:    pulumi.ToStringMap(s.Labels),
+				Labels:    pulumi.ToStringMap(labels),
 			},
 			Spec: certmanagerv1.CertificateSpecArgs{
-				DnsNames: pulumi.StringArray{
-					pulumi.Sprintf("%s.%s", solrKubernetes.Metadata.Id,
-						solrKubernetes.Spec.Ingress.EndpointDomainName),
-					pulumi.Sprintf("%s-internal.%s", solrKubernetes.Metadata.Id,
-						solrKubernetes.Spec.Ingress.EndpointDomainName),
-				},
-				SecretName: nil,
+				DnsNames:   pulumi.ToStringArray(locals.IngressHostnames),
+				SecretName: pulumi.String(locals.IngressCertSecretName),
 				IssuerRef: certmanagerv1.CertificateSpecIssuerRefArgs{
 					Kind: pulumi.String("ClusterIssuer"),
-					//note: a ClusterIssuer resource should have already exist on the kubernetes-cluster.
-					//this is typically taken care of by the kubernetes cluster administrator.
-					//if the kubernetes-cluster is created using Planton Cloud, then the cluster-issuer name will be
-					//same as the ingress-domain-name as long as the same ingress-domain-name is added to the list of
-					//ingress-domain-names for the GkeCluster/EksCluster/AksCluster spec.
-					Name: pulumi.String(solrKubernetes.Spec.Ingress.EndpointDomainName),
+					Name: pulumi.String(locals.IngressCertClusterIssuerName),
 				},
 			},
 		})
@@ -52,20 +38,17 @@ func (s *ResourceStack) istioIngress(ctx *pulumi.Context, createdNamespace *kube
 
 	//create gateway
 	_, err = istiov1.NewGateway(ctx,
-		solrKubernetes.Metadata.Id,
+		locals.SolrKubernetes.Metadata.Id,
 		&istiov1.GatewayArgs{
 			Metadata: metav1.ObjectMetaArgs{
-				Name: pulumi.String(solrKubernetes.Metadata.Id),
+				Name: pulumi.String(locals.SolrKubernetes.Metadata.Id),
 				//all gateway resources should be created in the istio-ingress deployment namespace
-				Namespace: pulumi.String(IstioIngressNamespace),
-				Labels:    pulumi.ToStringMap(s.Labels),
+				Namespace: pulumi.String(vars.IstioIngressNamespace),
+				Labels:    pulumi.ToStringMap(labels),
 			},
 			Spec: istiov1.GatewaySpecArgs{
 				//the selector labels map should match the desired istio-ingress deployment.
-				Selector: pulumi.StringMap{
-					"app":   pulumi.String("istio-ingress"),
-					"istio": pulumi.String("ingress"),
-				},
+				Selector: pulumi.ToStringMap(vars.IstioIngressSelectorLabels),
 				Servers: istiov1.GatewaySpecServersArray{
 					&istiov1.GatewaySpecServersArgs{
 						Name: pulumi.String("solr-https"),
@@ -74,12 +57,7 @@ func (s *ResourceStack) istioIngress(ctx *pulumi.Context, createdNamespace *kube
 							Name:     pulumi.String("solr-https"),
 							Protocol: pulumi.String("HTTPS"),
 						},
-						Hosts: pulumi.StringArray{
-							pulumi.Sprintf("%s.%s", solrKubernetes.Metadata.Id,
-								solrKubernetes.Spec.Ingress.EndpointDomainName),
-							pulumi.Sprintf("%s-internal.%s", solrKubernetes.Metadata.Id,
-								solrKubernetes.Spec.Ingress.EndpointDomainName),
-						},
+						Hosts: pulumi.ToStringArray(locals.IngressHostnames),
 						Tls: &istiov1.GatewaySpecServersTlsArgs{
 							CredentialName: addedCertificate.Spec.SecretName(),
 							Mode:           pulumi.String(v1.ServerTLSSettings_SIMPLE.String()),
@@ -92,12 +70,7 @@ func (s *ResourceStack) istioIngress(ctx *pulumi.Context, createdNamespace *kube
 							Name:     pulumi.String("solr-http"),
 							Protocol: pulumi.String("HTTP"),
 						},
-						Hosts: pulumi.StringArray{
-							pulumi.Sprintf("%s.%s", solrKubernetes.Metadata.Id,
-								solrKubernetes.Spec.Ingress.EndpointDomainName),
-							pulumi.Sprintf("%s-internal.%s", solrKubernetes.Metadata.Id,
-								solrKubernetes.Spec.Ingress.EndpointDomainName),
-						},
+						Hosts: pulumi.ToStringArray(locals.IngressHostnames),
 						Tls: &istiov1.GatewaySpecServersTlsArgs{
 							HttpsRedirect: pulumi.Bool(true),
 						},
@@ -111,33 +84,26 @@ func (s *ResourceStack) istioIngress(ctx *pulumi.Context, createdNamespace *kube
 
 	//create virtual-service
 	_, err = istiov1.NewVirtualService(ctx,
-		solrKubernetes.Metadata.Id,
+		locals.SolrKubernetes.Metadata.Id,
 		&istiov1.VirtualServiceArgs{
 			Metadata: metav1.ObjectMetaArgs{
-				Name:      pulumi.String(solrKubernetes.Metadata.Id),
+				Name:      pulumi.String(locals.SolrKubernetes.Metadata.Id),
 				Namespace: createdNamespace.Metadata.Name(),
-				Labels:    pulumi.ToStringMap(s.Labels),
+				Labels:    pulumi.ToStringMap(labels),
 			},
 			Spec: istiov1.VirtualServiceSpecArgs{
 				Gateways: pulumi.StringArray{
-					pulumi.Sprintf("%s/%s", IstioIngressNamespace,
-						solrKubernetes.Metadata.Id),
+					pulumi.Sprintf("%s/%s", vars.IstioIngressNamespace,
+						locals.SolrKubernetes.Metadata.Id),
 				},
-				Hosts: pulumi.StringArray{
-					pulumi.Sprintf("%s.%s", solrKubernetes.Metadata.Id,
-						solrKubernetes.Spec.Ingress.EndpointDomainName),
-					pulumi.Sprintf("%s-internal.%s", solrKubernetes.Metadata.Id,
-						solrKubernetes.Spec.Ingress.EndpointDomainName),
-				},
+				Hosts: pulumi.ToStringArray(locals.IngressHostnames),
 				Http: istiov1.VirtualServiceSpecHttpArray{
 					&istiov1.VirtualServiceSpecHttpArgs{
-						Name: pulumi.String(solrKubernetes.Metadata.Id),
+						Name: pulumi.String(locals.SolrKubernetes.Metadata.Id),
 						Route: istiov1.VirtualServiceSpecHttpRouteArray{
 							&istiov1.VirtualServiceSpecHttpRouteArgs{
 								Destination: istiov1.VirtualServiceSpecHttpRouteDestinationArgs{
-									Host: pulumi.Sprintf("%s-solrcloud-common.%s.svc.cluster.local",
-										solrKubernetes.Metadata.Name,
-										createdNamespace.Metadata.Name()),
+									Host: pulumi.String(locals.KubeServiceFqdn),
 									Port: istiov1.VirtualServiceSpecHttpRouteDestinationPortArgs{
 										Number: pulumi.Int(80),
 									},
