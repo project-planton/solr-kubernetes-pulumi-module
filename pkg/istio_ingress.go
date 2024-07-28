@@ -10,22 +10,23 @@ import (
 	v1 "istio.io/api/networking/v1"
 )
 
-func istioIngress(ctx *pulumi.Context, l *Locals, createdNamespace *kubernetescorev1.Namespace, labels map[string]string) error {
+func istioIngress(ctx *pulumi.Context, locals *Locals,
+	createdNamespace *kubernetescorev1.Namespace, labels map[string]string) error {
 	//crate new certificate
 	addedCertificate, err := certmanagerv1.NewCertificate(ctx,
 		"ingress-certificate",
 		&certmanagerv1.CertificateArgs{
 			Metadata: metav1.ObjectMetaArgs{
-				Name:      pulumi.String(local.SolrKubernetes.Metadata.Id),
+				Name:      pulumi.String(locals.SolrKubernetes.Metadata.Id),
 				Namespace: createdNamespace.Metadata.Name(),
 				Labels:    pulumi.ToStringMap(labels),
 			},
 			Spec: certmanagerv1.CertificateSpecArgs{
-				DnsNames:   pulumi.ToStringArray(local.IngressHostnames),
-				SecretName: pulumi.String(local.IngressCertSecretName),
+				DnsNames:   pulumi.ToStringArray(locals.IngressHostnames),
+				SecretName: pulumi.String(locals.IngressCertSecretName),
 				IssuerRef: certmanagerv1.CertificateSpecIssuerRefArgs{
 					Kind: pulumi.String("ClusterIssuer"),
-					Name: pulumi.String(local.IngressCertClusterIssuerName),
+					Name: pulumi.String(locals.IngressCertClusterIssuerName),
 				},
 			},
 		})
@@ -35,10 +36,10 @@ func istioIngress(ctx *pulumi.Context, l *Locals, createdNamespace *kubernetesco
 
 	//create gateway
 	_, err = istiov1.NewGateway(ctx,
-		local.SolrKubernetes.Metadata.Id,
+		locals.SolrKubernetes.Metadata.Id,
 		&istiov1.GatewayArgs{
 			Metadata: metav1.ObjectMetaArgs{
-				Name: pulumi.String(local.SolrKubernetes.Metadata.Id),
+				Name: pulumi.String(locals.SolrKubernetes.Metadata.Id),
 				//all gateway resources should be created in the istio-ingress deployment namespace
 				Namespace: pulumi.String(vars.IstioIngressNamespace),
 				Labels:    pulumi.ToStringMap(labels),
@@ -54,7 +55,7 @@ func istioIngress(ctx *pulumi.Context, l *Locals, createdNamespace *kubernetesco
 							Name:     pulumi.String("solr-https"),
 							Protocol: pulumi.String("HTTPS"),
 						},
-						Hosts: pulumi.ToStringArray(local.IngressHostnames),
+						Hosts: pulumi.ToStringArray(locals.IngressHostnames),
 						Tls: &istiov1.GatewaySpecServersTlsArgs{
 							CredentialName: addedCertificate.Spec.SecretName(),
 							Mode:           pulumi.String(v1.ServerTLSSettings_SIMPLE.String()),
@@ -67,7 +68,7 @@ func istioIngress(ctx *pulumi.Context, l *Locals, createdNamespace *kubernetesco
 							Name:     pulumi.String("solr-http"),
 							Protocol: pulumi.String("HTTP"),
 						},
-						Hosts: pulumi.ToStringArray(local.IngressHostnames),
+						Hosts: pulumi.ToStringArray(locals.IngressHostnames),
 						Tls: &istiov1.GatewaySpecServersTlsArgs{
 							HttpsRedirect: pulumi.Bool(true),
 						},
@@ -81,26 +82,26 @@ func istioIngress(ctx *pulumi.Context, l *Locals, createdNamespace *kubernetesco
 
 	//create virtual-service
 	_, err = istiov1.NewVirtualService(ctx,
-		local.SolrKubernetes.Metadata.Id,
+		locals.SolrKubernetes.Metadata.Id,
 		&istiov1.VirtualServiceArgs{
 			Metadata: metav1.ObjectMetaArgs{
-				Name:      pulumi.String(local.SolrKubernetes.Metadata.Id),
+				Name:      pulumi.String(locals.SolrKubernetes.Metadata.Id),
 				Namespace: createdNamespace.Metadata.Name(),
 				Labels:    pulumi.ToStringMap(labels),
 			},
 			Spec: istiov1.VirtualServiceSpecArgs{
 				Gateways: pulumi.StringArray{
 					pulumi.Sprintf("%s/%s", vars.IstioIngressNamespace,
-						local.SolrKubernetes.Metadata.Id),
+						locals.SolrKubernetes.Metadata.Id),
 				},
-				Hosts: pulumi.ToStringArray(local.IngressHostnames),
+				Hosts: pulumi.ToStringArray(locals.IngressHostnames),
 				Http: istiov1.VirtualServiceSpecHttpArray{
 					&istiov1.VirtualServiceSpecHttpArgs{
-						Name: pulumi.String(local.SolrKubernetes.Metadata.Id),
+						Name: pulumi.String(locals.SolrKubernetes.Metadata.Id),
 						Route: istiov1.VirtualServiceSpecHttpRouteArray{
 							&istiov1.VirtualServiceSpecHttpRouteArgs{
 								Destination: istiov1.VirtualServiceSpecHttpRouteDestinationArgs{
-									Host: pulumi.String(local.KubeServiceFqdn),
+									Host: pulumi.String(locals.KubeServiceFqdn),
 									Port: istiov1.VirtualServiceSpecHttpRouteDestinationPortArgs{
 										Number: pulumi.Int(80),
 									},
