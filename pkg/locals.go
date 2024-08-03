@@ -36,7 +36,7 @@ func initializeLocals(ctx *pulumi.Context, stackInput *model.SolrKubernetesStack
 	ctx.Export(outputs.Service, pulumi.String(locals.KubeServiceName))
 
 	locals.KubeServiceFqdn = fmt.Sprintf(
-		"%s-solrcloud-common.%s.svc.cluster.locals",
+		"%s-solrcloud-common.%s.svc.cluster.local",
 		solrKubernetes.Metadata.Name, locals.Namespace)
 
 	//export kubernetes endpoint
@@ -76,7 +76,7 @@ func initializeLocals(ctx *pulumi.Context, stackInput *model.SolrKubernetesStack
 	//ingress-domain-names for the GkeCluster/EksCluster/AksCluster spec.
 	locals.IngressCertClusterIssuerName = solrKubernetes.Spec.Ingress.EndpointDomainName
 
-	locals.IngressCertSecretName = solrKubernetes.Metadata.Id
+	locals.IngressCertSecretName = fmt.Sprintf("cert-%s", solrKubernetes.Metadata.Id)
 
 	return locals
 }
