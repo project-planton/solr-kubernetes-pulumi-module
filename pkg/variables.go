@@ -7,8 +7,8 @@ var vars = struct {
 }{
 	IstioIngressNamespace: "istio-ingress",
 	IstioIngressSelectorLabels: map[string]string{
-		"app":   "istio-ingress",
-		"istio": "ingress",
+		"app":   "gateway",
+		"istio": "gateway",
 	},
 	SolrCloudSolrModules: []string{
 		"jaegertracer-configurator",

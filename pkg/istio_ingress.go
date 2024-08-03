@@ -18,7 +18,7 @@ func istioIngress(ctx *pulumi.Context, locals *Locals,
 		&certmanagerv1.CertificateArgs{
 			Metadata: metav1.ObjectMetaArgs{
 				Name:      pulumi.String(locals.SolrKubernetes.Metadata.Id),
-				Namespace: createdNamespace.Metadata.Name(),
+				Namespace: pulumi.String(vars.IstioIngressNamespace),
 				Labels:    pulumi.ToStringMap(labels),
 			},
 			Spec: certmanagerv1.CertificateSpecArgs{
