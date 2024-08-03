@@ -13,7 +13,7 @@ func solrCloud(ctx *pulumi.Context, locals *Locals,
 	//create solr-operator's solrcloud resource
 	_, err := v1beta1.NewSolrCloud(ctx, "solr-cloud", &v1beta1.SolrCloudArgs{
 		Metadata: metav1.ObjectMetaArgs{
-			Name:      pulumi.String(locals.SolrKubernetes.Metadata.Id),
+			Name:      pulumi.String(locals.SolrKubernetes.Metadata.Name),
 			Namespace: createdNamespace.Metadata.Name(),
 			Labels:    pulumi.ToStringMap(labels),
 		},
@@ -31,7 +31,7 @@ func solrCloud(ctx *pulumi.Context, locals *Locals,
 				PodOptions: v1beta1.SolrCloudSpecCustomSolrKubeOptionsPodOptionsArgs{
 					Resources: v1beta1.SolrCloudSpecCustomSolrKubeOptionsPodOptionsResourcesArgs{
 						Limits: pulumi.ToMap(map[string]interface{}{
-							"cpu":    locals.SolrKubernetes.Spec.SolrContainer.Resources.Limits.Cpu,
+							//"cpu":    locals.SolrKubernetes.Spec.SolrContainer.Resources.Limits.Cpu,
 							"memory": locals.SolrKubernetes.Spec.SolrContainer.Resources.Limits.Memory,
 						}),
 						Requests: pulumi.ToMap(map[string]interface{}{
@@ -62,22 +62,22 @@ func solrCloud(ctx *pulumi.Context, locals *Locals,
 					Persistence: v1beta1.SolrCloudSpecZookeeperRefProvidedPersistenceArgs{
 						Spec: v1beta1.SolrCloudSpecZookeeperRefProvidedPersistenceSpecArgs{
 							Resources: v1beta1.SolrCloudSpecZookeeperRefProvidedPersistenceSpecResourcesArgs{
-								Requests: pulumi.ToMap(map[string]interface{}{
-									"storage": locals.SolrKubernetes.Spec.ZookeeperContainer.DiskSize,
-								}),
+								Requests: pulumi.Map{
+									"storage": pulumi.String(locals.SolrKubernetes.Spec.ZookeeperContainer.DiskSize),
+								},
 							},
 						},
 					},
 					ZookeeperPodPolicy: v1beta1.SolrCloudSpecZookeeperRefProvidedZookeeperPodPolicyArgs{
 						Resources: v1beta1.SolrCloudSpecZookeeperRefProvidedZookeeperPodPolicyResourcesArgs{
 							Limits: pulumi.ToMap(map[string]interface{}{
-								"cpu":    locals.SolrKubernetes.Spec.ZookeeperContainer.Resources.Limits.Cpu,
+								//"cpu":    locals.SolrKubernetes.Spec.ZookeeperContainer.Resources.Limits.Cpu,
 								"memory": locals.SolrKubernetes.Spec.ZookeeperContainer.Resources.Limits.Memory,
 							}),
-							Requests: pulumi.ToMap(map[string]interface{}{
-								"cpu":    locals.SolrKubernetes.Spec.ZookeeperContainer.Resources.Requests.Cpu,
-								"memory": locals.SolrKubernetes.Spec.ZookeeperContainer.Resources.Requests.Memory,
-							}),
+							Requests: pulumi.Map{
+								"cpu":    pulumi.String(locals.SolrKubernetes.Spec.ZookeeperContainer.Resources.Requests.Cpu),
+								"memory": pulumi.String(locals.SolrKubernetes.Spec.ZookeeperContainer.Resources.Requests.Memory),
+							},
 						},
 					},
 				},
