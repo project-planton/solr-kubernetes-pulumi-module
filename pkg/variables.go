@@ -1,15 +1,16 @@
 package pkg
 
 var vars = struct {
-	IstioIngressNamespace      string
-	IstioIngressSelectorLabels map[string]string
-	SolrCloudSolrModules       []string
+	GatewayExternalLoadBalancerServiceHostname string
+	GatewayIngressClassName                    string
+	GatewayInternalLoadBalancerServiceHostname string
+	IstioIngressNamespace                      string
+	SolrCloudSolrModules                       []string
 }{
-	IstioIngressNamespace: "istio-ingress",
-	IstioIngressSelectorLabels: map[string]string{
-		"app":   "gateway",
-		"istio": "gateway",
-	},
+	GatewayExternalLoadBalancerServiceHostname: "ingress-external.istio-ingress.svc.cluster.local",
+	GatewayIngressClassName:                    "istio",
+	GatewayInternalLoadBalancerServiceHostname: "ingress-internal.istio-ingress.svc.cluster.local",
+	IstioIngressNamespace:                      "istio-ingress",
 	SolrCloudSolrModules: []string{
 		"jaegertracer-configurator",
 		"ltr",
