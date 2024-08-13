@@ -1,7 +1,7 @@
 package outputs
 
 import (
-	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/kubernetes/solrkubernetes/model"
+	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/kubernetes/solrkubernetes"
 	"github.com/plantoncloud/stack-job-runner-golang-sdk/pkg/automationapi/autoapistackoutput"
 	"github.com/pulumi/pulumi/sdk/v3/go/auto"
 )
@@ -16,8 +16,8 @@ const (
 )
 
 func PulumiOutputsToStackOutputsConverter(pulumiOutputs auto.OutputMap,
-	input *model.SolrKubernetesStackInput) *model.SolrKubernetesStackOutputs {
-	return &model.SolrKubernetesStackOutputs{
+	input *solrkubernetes.SolrKubernetesStackInput) *solrkubernetes.SolrKubernetesStackOutputs {
+	return &solrkubernetes.SolrKubernetesStackOutputs{
 		Namespace:          autoapistackoutput.GetVal(pulumiOutputs, Namespace),
 		KubeEndpoint:       autoapistackoutput.GetVal(pulumiOutputs, KubeEndpoint),
 		Service:            autoapistackoutput.GetVal(pulumiOutputs, Service),

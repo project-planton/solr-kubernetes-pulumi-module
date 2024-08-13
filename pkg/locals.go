@@ -2,7 +2,7 @@ package pkg
 
 import (
 	"fmt"
-	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/kubernetes/solrkubernetes/model"
+	"github.com/plantoncloud/planton-cloud-apis/zzgo/cloud/planton/apis/code2cloud/v1/kubernetes/solrkubernetes"
 	"github.com/plantoncloud/solr-kubernetes-pulumi-module/pkg/outputs"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
@@ -17,10 +17,10 @@ type Locals struct {
 	KubeServiceFqdn              string
 	KubeServiceName              string
 	Namespace                    string
-	SolrKubernetes               *model.SolrKubernetes
+	SolrKubernetes               *solrkubernetes.SolrKubernetes
 }
 
-func initializeLocals(ctx *pulumi.Context, stackInput *model.SolrKubernetesStackInput) *Locals {
+func initializeLocals(ctx *pulumi.Context, stackInput *solrkubernetes.SolrKubernetesStackInput) *Locals {
 	locals := &Locals{}
 	//assign value for the locals variable to make it available across the project
 	locals.SolrKubernetes = stackInput.ApiResource
