@@ -83,7 +83,7 @@ func solrCloud(ctx *pulumi.Context, locals *Locals,
 				},
 			},
 		},
-	})
+	}, pulumi.Parent(createdNamespace))
 	if err != nil {
 		return errors.Wrap(err, "failed to create solr-cloud resource")
 	}

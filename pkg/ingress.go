@@ -4,12 +4,13 @@ import (
 	"github.com/pkg/errors"
 	certmanagerv1 "github.com/plantoncloud/kubernetes-crd-pulumi-types/pkg/certmanager/certmanager/v1"
 	gatewayv1 "github.com/plantoncloud/kubernetes-crd-pulumi-types/pkg/gatewayapis/gateway/v1"
+	"github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes"
 	kubernetescorev1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/core/v1"
 	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/meta/v1"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-func ingress(ctx *pulumi.Context, locals *Locals,
+func ingress(ctx *pulumi.Context, locals *Locals, kubernetesProvider *kubernetes.Provider,
 	createdNamespace *kubernetescorev1.Namespace, labels map[string]string) error {
 	// Create new certificate
 	addedCertificate, err := certmanagerv1.NewCertificate(ctx,
@@ -28,7 +29,7 @@ func ingress(ctx *pulumi.Context, locals *Locals,
 					Name: pulumi.String(locals.IngressCertClusterIssuerName),
 				},
 			},
-		})
+		}, pulumi.Provider(kubernetesProvider))
 	if err != nil {
 		return errors.Wrap(err, "error creating certificate")
 	}
@@ -84,7 +85,7 @@ func ingress(ctx *pulumi.Context, locals *Locals,
 					},
 				},
 			},
-		}, pulumi.DependsOn([]pulumi.Resource{addedCertificate}))
+		}, pulumi.Provider(kubernetesProvider), pulumi.DependsOn([]pulumi.Resource{addedCertificate}))
 	if err != nil {
 		return errors.Wrap(err, "error creating gateway")
 	}
