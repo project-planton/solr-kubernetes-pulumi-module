@@ -30,6 +30,8 @@ func initializeLocals(ctx *pulumi.Context, stackInput *solrkubernetes.SolrKubern
 	//decide on the namespace
 	locals.Namespace = solrKubernetes.Metadata.Id
 
+	ctx.Export(outputs.Namespace, pulumi.String(locals.Namespace))
+
 	locals.KubeServiceName = fmt.Sprintf("%s-solrcloud-common", solrKubernetes.Metadata.Name)
 
 	//export kubernetes service name
