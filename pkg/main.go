@@ -9,17 +9,12 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-type ResourceStack struct {
-	Input  *solrkubernetes.SolrKubernetesStackInput
-	Labels map[string]string
-}
-
-func (s *ResourceStack) Resources(ctx *pulumi.Context) error {
-	locals := initializeLocals(ctx, s.Input)
+func Resources(ctx *pulumi.Context, stackInput *solrkubernetes.SolrKubernetesStackInput) error {
+	locals := initializeLocals(ctx, stackInput)
 
 	//create kubernetes-provider from the credential in the stack-input
 	kubernetesProvider, err := pulumikubernetesprovider.GetWithKubernetesClusterCredential(ctx,
-		s.Input.KubernetesClusterCredential, "kubernetes")
+		stackInput.KubernetesClusterCredential, "kubernetes")
 	if err != nil {
 		return errors.Wrap(err, "failed to create kubernetes provider")
 	}
@@ -31,7 +26,7 @@ func (s *ResourceStack) Resources(ctx *pulumi.Context) error {
 			Metadata: kubernetesmetav1.ObjectMetaPtrInput(
 				&kubernetesmetav1.ObjectMetaArgs{
 					Name:   pulumi.String(locals.Namespace),
-					Labels: pulumi.ToStringMap(s.Labels),
+					Labels: pulumi.ToStringMap(locals.Labels),
 				}),
 		},
 		pulumi.Timeouts(&pulumi.CustomTimeouts{Create: "5s", Update: "5s", Delete: "5s"}),
@@ -41,13 +36,13 @@ func (s *ResourceStack) Resources(ctx *pulumi.Context) error {
 	}
 
 	//create solr-cloud custom resource
-	if err := solrCloud(ctx, locals, createdNamespace, s.Labels); err != nil {
+	if err := solrCloud(ctx, locals, createdNamespace); err != nil {
 		return errors.Wrap(err, "failed to create helm-chart resources")
 	}
 
 	//create istio-ingress resources if ingress is enabled.
 	if locals.SolrKubernetes.Spec.Ingress.IsEnabled {
-		if err := ingress(ctx, locals, kubernetesProvider, createdNamespace, s.Labels); err != nil {
+		if err := ingress(ctx, locals, kubernetesProvider, createdNamespace); err != nil {
 			return errors.Wrap(err, "failed to create istio ingress resources")
 		}
 	}

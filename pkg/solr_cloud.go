@@ -9,13 +9,13 @@ import (
 )
 
 func solrCloud(ctx *pulumi.Context, locals *Locals,
-	createdNamespace *kubernetescorev1.Namespace, labels map[string]string) error {
+	createdNamespace *kubernetescorev1.Namespace) error {
 	//create solr-operator's solrcloud resource
 	_, err := v1beta1.NewSolrCloud(ctx, "solr-cloud", &v1beta1.SolrCloudArgs{
 		Metadata: metav1.ObjectMetaArgs{
 			Name:      pulumi.String(locals.SolrKubernetes.Metadata.Name),
 			Namespace: createdNamespace.Metadata.Name(),
-			Labels:    pulumi.ToStringMap(labels),
+			Labels:    pulumi.ToStringMap(locals.Labels),
 		},
 		Spec: v1beta1.SolrCloudSpecArgs{
 			Replicas: pulumi.Int(locals.SolrKubernetes.Spec.SolrContainer.Replicas),

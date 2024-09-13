@@ -11,7 +11,7 @@ import (
 )
 
 func ingress(ctx *pulumi.Context, locals *Locals, kubernetesProvider *kubernetes.Provider,
-	createdNamespace *kubernetescorev1.Namespace, labels map[string]string) error {
+	createdNamespace *kubernetescorev1.Namespace) error {
 	// Create new certificate
 	addedCertificate, err := certmanagerv1.NewCertificate(ctx,
 		"ingress-certificate",
@@ -19,7 +19,7 @@ func ingress(ctx *pulumi.Context, locals *Locals, kubernetesProvider *kubernetes
 			Metadata: metav1.ObjectMetaArgs{
 				Name:      pulumi.String(locals.SolrKubernetes.Metadata.Id),
 				Namespace: pulumi.String(vars.IstioIngressNamespace),
-				Labels:    pulumi.ToStringMap(labels),
+				Labels:    pulumi.ToStringMap(locals.Labels),
 			},
 			Spec: certmanagerv1.CertificateSpecArgs{
 				DnsNames:   pulumi.ToStringArray(locals.IngressHostnames),
@@ -42,7 +42,7 @@ func ingress(ctx *pulumi.Context, locals *Locals, kubernetesProvider *kubernetes
 				Name: pulumi.Sprintf("%s-external", locals.SolrKubernetes.Metadata.Id),
 				// All gateway resources should be created in the ingress deployment namespace
 				Namespace: pulumi.String(vars.IstioIngressNamespace),
-				Labels:    pulumi.ToStringMap(labels),
+				Labels:    pulumi.ToStringMap(locals.Labels),
 			},
 			Spec: gatewayv1.GatewaySpecArgs{
 				GatewayClassName: pulumi.String(vars.GatewayIngressClassName),
@@ -97,7 +97,7 @@ func ingress(ctx *pulumi.Context, locals *Locals, kubernetesProvider *kubernetes
 			Metadata: metav1.ObjectMetaArgs{
 				Name:      pulumi.String("http-external-redirect"),
 				Namespace: createdNamespace.Metadata.Name(),
-				Labels:    pulumi.ToStringMap(labels),
+				Labels:    pulumi.ToStringMap(locals.Labels),
 			},
 			Spec: gatewayv1.HTTPRouteSpecArgs{
 				Hostnames: pulumi.StringArray{pulumi.String(locals.IngressExternalHostname)},
@@ -131,7 +131,7 @@ func ingress(ctx *pulumi.Context, locals *Locals, kubernetesProvider *kubernetes
 			Metadata: metav1.ObjectMetaArgs{
 				Name:      pulumi.String("https-external"),
 				Namespace: createdNamespace.Metadata.Name(),
-				Labels:    pulumi.ToStringMap(labels),
+				Labels:    pulumi.ToStringMap(locals.Labels),
 			},
 			Spec: gatewayv1.HTTPRouteSpecArgs{
 				Hostnames: pulumi.StringArray{pulumi.String(locals.IngressExternalHostname)},
