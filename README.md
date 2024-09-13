@@ -97,7 +97,7 @@ This will tear down the SolrCloud and all related resources from your Kubernetes
 - `solr_container`: Configuration for the Solr container, including replica count, image, resource requests/limits, disk size, and Solr JVM tuning options.
 - `zookeeper_container`: Configuration for the Zookeeper container, including replica count, resource requests/limits, and persistent disk size.
 
-https://github.com/plantoncloud/solr-kubernetes-pulumi-module/blob/84a991632a0ae615cf129be4a701d8daf548ad58/pkg/main.go#L17-L2000
+https://github.com/plantoncloud/planton-cloud-apis/blob/main/cloud/planton/apis/code2cloud/v1/kubernetes/solrkubernetes/spec.proto#L1-L109
 
 ### Outputs
 
