@@ -1,112 +1,69 @@
-# Apache Solr on Kubernetes Pulumi Module
+# Solr Kubernetes Pulumi Module
 
-Deploy Apache Solr On Kubernetes.
+## Key Features
 
-## Prerequisites
+### 1. **Kubernetes Provider Integration**
+   The module automatically creates a Kubernetes provider using the Kubernetes cluster credentials specified in the stack input. This ensures secure and authenticated communication with the target Kubernetes cluster.
 
-To use this module, ensure that the following are installed and properly configured:
+### 2. **Namespace Creation**
+   A new namespace is automatically created within the Kubernetes cluster, isolating the Solr instance and its associated components. This ensures that the resources deployed for Solr are logically separated from other workloads running in the cluster.
 
-1. **Pulumi CLI**: Follow the installation guide [here](https://www.pulumi.com/docs/get-started/install/).
-2. **Kubernetes cluster**: The module requires access to a Kubernetes cluster with sufficient resources.
-3. **Solr Operator**: Install the [Solr Operator](https://github.com/apache/solr-operator) in your Kubernetes cluster.
-4. **Cert-Manager**: Used for creating TLS certificates.
+### 3. **Solr Cluster Deployment**
+   The module deploys a Solr cluster based on the configuration provided in the API resource spec. Key settings, such as the number of replicas, container image, and resource limits (CPU and memory), can be customized. These configurations ensure that the Solr cluster is both scalable and tuned for performance.
 
-## Module Architecture
+### 4. **Zookeeper Integration**
+   The Zookeeper instance required by the Solr cluster is automatically provisioned. Zookeeper pods are configured with appropriate resource limits and persistent volumes, ensuring the reliable operation of the Solr cluster.
 
-This module manages the following resources:
+### 5. **Persistent Storage Configuration**
+   Each Solr and Zookeeper pod is provisioned with persistent storage volumes. This ensures that data is retained across pod restarts and is available for high-availability configurations.
 
-- **SolrCloud Custom Resource**: A Solr cloud cluster managed by the Solr Operator.
-- **Zookeeper Pods**: Required for the SolrCloud, managed as a Kubernetes resource.
-- **Persistent Volume Claims (PVCs)**: For storing Solr and Zookeeper data.
-- **Kubernetes Namespace**: A namespace to isolate the resources in the cluster.
-- **Ingress with TLS**: Secure ingress to the Solr service with HTTPS termination via cert-manager.
+### 6. **Ingress Management**
+   If ingress is enabled in the API resource spec, the module provisions ingress resources, including Istio-based ingress for routing external traffic to the Solr service. This makes it easier to expose Solr services to clients both inside and outside the Kubernetes cluster.
+
+### 7. **Resource Customization**
+   The module allows fine-grained control over the deployment by enabling developers to specify resource configurations, such as CPU and memory limits for Solr and Zookeeper pods. This ensures optimal resource usage and performance tuning for both services.
+
+### 8. **Pulumi Stack Outputs**
+   Upon successful deployment, the module generates several useful outputs, including:
+   - **Namespace**: The Kubernetes namespace in which Solr is deployed.
+   - **Service Name**: The service name for the Solr dashboard, which allows easy access to the Solr management UI.
+   - **Port Forward Command**: A command to set up port forwarding for local access to Solr if ingress is disabled.
+   - **Internal and External Endpoints**: URLs for accessing Solr within and outside the Kubernetes cluster.
+
+These outputs provide essential information for developers to monitor, manage, and interact with their deployed Solr clusters.
 
 ## Usage
 
-### Basic Usage
+Refer to the example section for usage instructions.
 
-#### Setup Input
+## Benefits
 
-```yaml
-apiVersion: code2cloud.planton.cloud/v1
-kind: SolrKubernetes
-metadata:
-  name: main
-  id: solk8s-my-org-prod-main
-spec:
-  solrContainer:
-    config:
-      garbageCollectionTuning: -XX:SurvivorRatio=4 -XX:TargetSurvivorRatio=90 -XX:MaxTenuringThreshold=8
-      javaMem: -Xms1g -Xmx3g
-      opts: -Dsolr.autoSoftCommit.maxTime=10000
-    diskSize: 1Gi
-    image:
-      repo: solr
-      tag: 8.7.0
-    replicas: 1
-    resources:
-      limits:
-        cpu: 2000m
-        memory: 2Gi
-      requests:
-        cpu: 50m
-        memory: 250Mi
-  zookeeperContainer:
-    diskSize: 1Gi
-    replicas: 1
-    resources:
-      limits:
-        cpu: 2000m
-        memory: 2Gi
-      requests:
-        cpu: 50m
-        memory: 250Mi
-  ingress:
-    isEnabled: true
-    endpointDomainName: my-company.com
-```
+1. **Standardized API Resource Structure**: The module leverages a standardized YAML specification to configure and deploy Solr clusters, making it easy for developers to replicate configurations across different environments.
+2. **Seamless Kubernetes Integration**: Designed to work natively with Kubernetes, this module automates the creation and management of critical Kubernetes resources such as namespaces, deployments, and services.
+3. **Infrastructure-as-Code**: By utilizing Pulumi, this module brings the benefits of infrastructure-as-code, such as version control, repeatable deployments, and rollback capabilities, to Solr deployments.
+4. **Customizable Resource Definitions**: The module supports the customization of key Solr configurations, such as the number of pods, memory settings, and persistent storage allocations, allowing for flexibility based on specific use cases.
+5. **Scalability and High Availability**: With support for replica configurations and resource tuning, this module ensures that Solr clusters can scale to meet performance demands while maintaining high availability and data durability.
 
-#### Deploy
+## Prerequisites
 
-```bash
-planton pulumi up --input <path-to-stack-input-yaml>
-```
+- **Pulumi Setup**: Ensure that Pulumi is installed and configured for the cloud provider being used.
+- **Kubernetes Cluster**: A Kubernetes cluster must be available, with the appropriate credentials provided in the stack input.
+- **Planton CLI**: The Planton CLI should be set up to run the `planton pulumi up --stack-input <api-resource.yaml>` command.
 
-#### Destroy
+## Pulumi Outputs
 
-```bash
-planton pulumi destroy --input <path-to-stack-input-yaml>
-```
+Once the module is deployed, several outputs are generated to provide critical information for managing the Solr cluster:
 
-This will tear down the SolrCloud and all related resources from your Kubernetes cluster.
+1. **Namespace**: The Kubernetes namespace where Solr and Zookeeper resources are deployed.
+2. **Service Name**: The name of the service for accessing the Solr dashboard.
+3. **Port Forward Command**: A command to enable local port forwarding to access Solr when ingress is disabled.
+4. **Kube Endpoint**: The internal endpoint for accessing Solr from within the Kubernetes cluster.
+5. **External Hostname**: The public endpoint for accessing Solr from outside the cluster.
+6. **Internal Hostname**: The internal hostname for accessing Solr within the cluster.
 
-### Inputs
+These outputs ensure easy access and management of the Solr cluster post-deployment.
 
-#### Solr Kubernetes Spec
+## Conclusion
 
-- `kubernetes_cluster_credential_id`: Kubernetes cluster credential ID to set up the Kubernetes provider in the stack job.
-- `solr_container`: Configuration for the Solr container, including replica count, image, resource requests/limits, disk size, and Solr JVM tuning options.
-- `zookeeper_container`: Configuration for the Zookeeper container, including replica count, resource requests/limits, and persistent disk size.
+The Solr Kubernetes Pulumi module provides a powerful and flexible solution for automating the deployment of Solr clusters on Kubernetes. With features like customizable resource configurations, seamless Kubernetes integration, and robust infrastructure management via Pulumi, this module greatly simplifies the operational overhead of managing Solr in cloud-native environments. By following a standardized YAML-based API resource approach, it empowers developers to deploy complex infrastructure with minimal effort, making Solr deployment more accessible and scalable.
 
-### Outputs
-
-This module will create the following outputs:
-
-- **SolrCloud resource**: A running SolrCloud instance in Kubernetes.
-- **Zookeeper cluster**: Zookeeper pods supporting the SolrCloud instance.
-- **Namespace**: A dedicated Kubernetes namespace for the SolrCloud deployment.
-- **Ingress and Certificate**: A secure HTTPS ingress with a certificate issued via cert-manager (if enabled).
-
-## Configuration Options
-
-- **Replica Count**: You can adjust the number of Solr and Zookeeper pods via the `replicas` parameter in the spec.
-- **Resource Limits**: Adjust CPU and memory limits for both Solr and Zookeeper containers.
-- **Persistent Volumes**: Customize the size of persistent volumes for Solr and Zookeeper using the `disk_size` parameter.
-
-## License
-
-This project is licensed under the Apache 2.0 License
-
-## Contributing
-
-We welcome contributions!

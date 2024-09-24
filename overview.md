@@ -1,11 +1,5 @@
-# Apache Solr on Kubernetes Pulumi Module
+# Overview
 
-This Pulumi module automates the deployment of **Apache Solr** on **Kubernetes** using the [Solr Operator](https://github.com/apache/solr-operator). It provides an easy-to-use, customizable approach to manage Solr cloud instances with built-in support for Kubernetes Ingress, TLS management, and Zookeeper.
+The Solr Kubernetes Pulumi module is designed to automate the deployment and management of a Solr cluster and its associated Zookeeper instance on a Kubernetes environment. By leveraging Kubernetes credentials and provider integration, the module allows developers to define infrastructure using a YAML configuration that adheres to Kubernetes' API resource modeling. The module creates necessary Kubernetes resources such as namespaces, Solr instances, and ingress configurations for exposing the Solr dashboard. This solution streamlines the deployment process and integrates seamlessly with Kubernetes, ensuring scalability and high availability for Solr-based applications.
 
-## Features
-
-- Deploys a SolrCloud resource using the Solr Operator.
-- Manages Solr pods, Zookeeper pods, and Persistent Volumes for both.
-- Supports custom configuration for JVM tuning and garbage collection.
-- Automatic creation of Kubernetes namespaces, ingress routes, and certificates using cert-manager.
-- Compatible with Kubernetes Gateway API for managing ingress with TLS termination.
+One of the key features of the module is its ability to take custom resource definitions like container images, memory limits, and other Solr-specific configurations from the provided `api-resource.yaml`. Additionally, the module supports ingress management and Istio-based routing when enabled. The Pulumi stack outputs provide valuable information for developers, such as the internal and external endpoints for accessing Solr and command-line options for port forwarding when direct access is restricted. This modular approach simplifies the deployment of complex infrastructure by allowing developers to focus on configuration while the module handles resource provisioning on the cloud.
