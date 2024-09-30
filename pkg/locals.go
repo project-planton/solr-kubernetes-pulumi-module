@@ -1,9 +1,8 @@
 package pkg
 
 import (
+	solrkubernetesv1 "buf.build/gen/go/plantoncloud/project-planton/protocolbuffers/go/project/planton/apis/provider/kubernetes/solrkubernetes/v1"
 	"fmt"
-	"github.com/plantoncloud/project-planton/apis/zzgo/cloud/planton/apis/code2cloud/v1/kubernetes/solrkubernetes"
-	"github.com/plantoncloud/project-planton/apis/zzgo/cloud/planton/apis/commons/apiresource/enums/apiresourcekind"
 	"github.com/plantoncloud/pulumi-module-golang-commons/pkg/provider/kubernetes/kuberneteslabelkeys"
 	"github.com/plantoncloud/solr-kubernetes-pulumi-module/pkg/outputs"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -20,11 +19,11 @@ type Locals struct {
 	KubeServiceFqdn              string
 	KubeServiceName              string
 	Namespace                    string
-	SolrKubernetes               *solrkubernetes.SolrKubernetes
+	SolrKubernetes               *solrkubernetesv1.SolrKubernetes
 	Labels                       map[string]string
 }
 
-func initializeLocals(ctx *pulumi.Context, stackInput *solrkubernetes.SolrKubernetesStackInput) *Locals {
+func initializeLocals(ctx *pulumi.Context, stackInput *solrkubernetesv1.SolrKubernetesStackInput) *Locals {
 	locals := &Locals{}
 	//assign value for the locals variable to make it available across the project
 	locals.SolrKubernetes = stackInput.Target
@@ -36,7 +35,7 @@ func initializeLocals(ctx *pulumi.Context, stackInput *solrkubernetes.SolrKubern
 		kuberneteslabelkeys.Organization: stackInput.Target.Spec.EnvironmentInfo.OrgId,
 		kuberneteslabelkeys.Resource:     strconv.FormatBool(true),
 		kuberneteslabelkeys.ResourceId:   stackInput.Target.Metadata.Id,
-		kuberneteslabelkeys.ResourceKind: apiresourcekind.ApiResourceKind_solr_kubernetes.String(),
+		kuberneteslabelkeys.ResourceKind: "solr_kubernetes",
 	}
 
 	//decide on the namespace
