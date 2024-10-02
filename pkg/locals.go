@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	solrkubernetesv1 "buf.build/gen/go/plantoncloud/project-planton/protocolbuffers/go/project/planton/apis/provider/kubernetes/solrkubernetes/v1"
+	solrkubernetesv1 "buf.build/gen/go/plantoncloud/project-planton/protocolbuffers/go/project/planton/provider/kubernetes/solrkubernetes/v1"
 	"fmt"
 	"github.com/plantoncloud/pulumi-module-golang-commons/pkg/provider/kubernetes/kuberneteslabelkeys"
 	"github.com/plantoncloud/solr-kubernetes-pulumi-module/pkg/outputs"
