@@ -2,7 +2,7 @@ package pkg
 
 import (
 	"github.com/pkg/errors"
-	"github.com/plantoncloud/kubernetes-crd-pulumi-types/pkg/solroperator/solr/v1beta1"
+	"github.com/project-planton/kubernetes-crd-pulumi-types/pkg/solroperator/kubernetes/solr/v1beta1"
 	kubernetescorev1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/core/v1"
 	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/meta/v1"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
