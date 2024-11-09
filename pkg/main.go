@@ -1,9 +1,9 @@
 package pkg
 
 import (
-	solrkubernetesv1 "buf.build/gen/go/project-planton/apis/protocolbuffers/go/project/planton/provider/kubernetes/solrkubernetes/v1"
 	"github.com/pkg/errors"
-	"github.com/project-planton/pulumi-module-golang-commons/pkg/provider/kubernetes/pulumikubernetesprovider"
+	solrkubernetesv1 "github.com/project-planton/project-planton/apis/go/project/planton/provider/kubernetes/solrkubernetes/v1"
+	"github.com/project-planton/project-planton/pkg/pulmod/provider/kubernetes/pulumikubernetesprovider"
 	kubernetescorev1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/core/v1"
 	kubernetesmetav1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/meta/v1"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
