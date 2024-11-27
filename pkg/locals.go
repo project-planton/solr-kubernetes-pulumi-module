@@ -62,15 +62,15 @@ func initializeLocals(ctx *pulumi.Context, stackInput *solrkubernetesv1.SolrKube
 
 	if solrKubernetes.Spec.Ingress == nil ||
 		!solrKubernetes.Spec.Ingress.IsEnabled ||
-		solrKubernetes.Spec.Ingress.EndpointDomainName == "" {
+		solrKubernetes.Spec.Ingress.DnsDomain == "" {
 		return locals
 	}
 
 	locals.IngressExternalHostname = fmt.Sprintf("%s.%s", solrKubernetes.Metadata.Id,
-		solrKubernetes.Spec.Ingress.EndpointDomainName)
+		solrKubernetes.Spec.Ingress.DnsDomain)
 
 	locals.IngressInternalHostname = fmt.Sprintf("%s-internal.%s", solrKubernetes.Metadata.Id,
-		solrKubernetes.Spec.Ingress.EndpointDomainName)
+		solrKubernetes.Spec.Ingress.DnsDomain)
 
 	locals.IngressHostnames = []string{
 		locals.IngressExternalHostname,
@@ -86,7 +86,7 @@ func initializeLocals(ctx *pulumi.Context, stackInput *solrkubernetesv1.SolrKube
 	//if the kubernetes-cluster is created using Planton Cloud, then the cluster-issuer name will be
 	//same as the ingress-domain-name as long as the same ingress-domain-name is added to the list of
 	//ingress-domain-names for the GkeCluster/EksCluster/AksCluster spec.
-	locals.IngressCertClusterIssuerName = solrKubernetes.Spec.Ingress.EndpointDomainName
+	locals.IngressCertClusterIssuerName = solrKubernetes.Spec.Ingress.DnsDomain
 
 	locals.IngressCertSecretName = fmt.Sprintf("cert-%s", solrKubernetes.Metadata.Id)
 
